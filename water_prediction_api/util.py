@@ -21,7 +21,8 @@ def get_sql_engine():
     # Settings from .env file
     settings = dotenv_values()
 
-    ROOT = '..'  # relative path to the root of the project
+    MODULE_PATH = os.path.dirname(os.path.realpath(__file__))
+    ROOT = os.path.join(MODULE_PATH, '..')  # root of the project
 
     db_uri = (f"mysql+pymysql://{settings['SQL_USER']}:{settings['SQL_PWD']}"
             f"@{settings['SQL_HOST']}/{settings['SQL_DB']}"

@@ -17,6 +17,10 @@ tensorflow
 # pytest
 # yapf
 
+# SQL
+pymysql
+sqlalchemy
+
 # API
 uvicorn
 fastapi
