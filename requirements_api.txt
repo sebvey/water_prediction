@@ -1,0 +1,31 @@
+# packaging
+pip>=9
+setuptools>=26
+wheel>=0.29
+
+# data science
+numpy
+pandas
+matplotlib
+tensorflow
+
+# # tests/linter
+# black
+# coverage
+# flake8
+# pytest
+# yapf
+
+# API
+uvicorn
+fastapi
+requests
+
+# gcsfs
+# google-cloud-storage
+# mlflow
+# s3fs
+
+# utilities
+memoized-property
+python-dotenv
