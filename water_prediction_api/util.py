@@ -10,7 +10,10 @@ import numpy as np
 
 from tensorflow import keras
 
-
+# SETTINGS FROM .env FILE AND ROOT PATH
+MODULE_PATH = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.join(MODULE_PATH, '..')  # root of the project
+SETTINGS = dotenv_values()
 
 def get_sql_engine():
     """
@@ -18,17 +21,11 @@ def get_sql_engine():
     for the Google Cloud SQL database
     """
 
-    # Settings from .env file
-    settings = dotenv_values()
-
-    MODULE_PATH = os.path.dirname(os.path.realpath(__file__))
-    ROOT = os.path.join(MODULE_PATH, '..')  # root of the project
-
-    db_uri = (f"mysql+pymysql://{settings['SQL_USER']}:{settings['SQL_PWD']}"
-            f"@{settings['SQL_HOST']}/{settings['SQL_DB']}"
-            f"?ssl_ca={os.path.join(ROOT,settings['SQL_SSL_CA'])}"
-            f"&ssl_cert={os.path.join(ROOT,settings['SQL_SSL_CERT'])}"
-            f"&ssl_key={os.path.join(ROOT,settings['SQL_SSL_KEY'])}"
+    db_uri = (f"mysql+pymysql://{SETTINGS['SQL_USER']}:{SETTINGS['SQL_PWD']}"
+            f"@{SETTINGS['SQL_HOST']}/{SETTINGS['SQL_DB']}"
+            f"?ssl_ca={os.path.join(ROOT,SETTINGS['SQL_SSL_CA'])}"
+            f"&ssl_cert={os.path.join(ROOT,SETTINGS['SQL_SSL_CERT'])}"
+            f"&ssl_key={os.path.join(ROOT,SETTINGS['SQL_SSL_KEY'])}"
             f"&ssl_check_hostname=false")
 
     return create_engine(db_uri, echo=False, future=False)
@@ -132,7 +129,7 @@ def get_weather_df(station_id):
     forecast_weather['station_id'] = station_id
 
     # Returns the concatenated DataFrame
-    return pd.concat([history_weather, forecast_weather])
+    return pd.concat([history_weather, forecast_weather],ignore_index=True)
 
 def build_features_data(station_id,stations,weather):
     """
@@ -180,7 +177,8 @@ def add_prediction_to_the_data(data):
     and adds a prediction column with the predicted data
     """
 
-    model = keras.models.load_model('../keras_model')
+    MODEL_PATH = os.path.join(ROOT,'keras_model')
+    model = keras.models.load_model(MODEL_PATH)
 
     feature_columns = [
         'sin_doy',
@@ -190,7 +188,6 @@ def add_prediction_to_the_data(data):
         'precipitation',
         'maxwind',
     ]
-
 
     for delta in range(1, 61): # we have 60 previous weather for each row
         feature_columns += [f'precipitation_{delta}']
