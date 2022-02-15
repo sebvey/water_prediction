@@ -49,7 +49,7 @@ def get_weather_df(station_id):
     Requests weatherAPI.com forecast API (today + 9 days of forecast)
     Returns the concatenated weather data as a DataFrame
     """
-    # SQL CONFGURATION
+    # SQL CONFIGURATION
     engine = get_sql_engine()
 
     # WeatherAPI CONFIGURATION
