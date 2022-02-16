@@ -33,7 +33,7 @@ docker_build:
 docker_run_local:
 	@docker run -e PORT=8000 -p 8080:8000 ${API_IMG}
 
-# !! TODO : CONFIGURE DOCKER
+# !! TODO : CONFIGURE DOCKER FOR GCP PUSH
 
 docker_push:
 	@docker push ${API_IMG}
