@@ -11,29 +11,39 @@ mysql_connect:
 
 ## GCLOUD
 
-gcloud_prj_select:
-	@echo "SELECTING GCP PROJECT ..."
-	@gcloud config set project ${GCP_PRJ_ID}
+gcloud_config_activate:
+	@echo "ACTIVATING GCLOUD CONFIGURATION..."
+	@gcloud config configurations activate ${GCP_CONFIG}
 
-gcloud_services_enable: gcloud_prj_select
+# To use once to create the gcloud configuration
+gcloud_config_init:
+	@echo "CREATING GCLOUD CONFIGURATION..."
+	@gcloud config configurations create --activate ${GCP_CONFIG}
+	@gcloud config set account ${GCP_ACCOUNT}
+	@gcloud config set project ${GCP_PRJ_ID}
+	@gcloud config set artifacts/repository ${ART_REPO}
+	@gcloud config set artifacts/location ${ART_LOCATION}
+
+# To use once to artifacts configuration (apis, repo)
+gcloud_artifacts_init: gcloud_config_activate
 	@echo "ENABLING NEEDED APIs ..."
-	@gcloud services enable cloudbuild.googleapis.com
-	@gcloud services enable cloudfunctions.googleapis.com
-	@gcloud services enable cloudscheduler.googleapis.com
+	@gcloud services enable artifactregistry.googleapis.com
+	@echo "CREATING ARTIFACT REPOSITORY..."
+	@gcloud artifacts repositories create ${ART_REPO} --repository-format=docker \
+		--location=${ART_LOCATION}
 
 # ----------------------------------
 #     DOCKER
 # ----------------------------------
-
-API_IMG="${GCR_MULTI_REGION}/${GCP_PRJ_ID}/${DOCKER_IMG}"
+docker_config:
+	@echo "CONFIGURING DOCKER..."
+	@gcloud auth configure-docker ${ART_LOCATION}-docker.pkg.dev
 
 docker_build:
 	@docker build -t ${API_IMG} .
 
 docker_run_local:
 	@docker run -e PORT=8000 -p 8080:8000 ${API_IMG}
-
-# !! TODO : CONFIGURE DOCKER FOR GCP PUSH
 
 docker_push:
 	@docker push ${API_IMG}
