@@ -3,6 +3,9 @@
 # ENV VARIABLES IMPORT
 include .env
 
+DOCKER_IMG=${ART_LOCATION}-docker.pkg.dev/${GCP_PRJ_ID}/${ART_REPO}/${ART_IMG}
+
+
 
 # ----------------------------------
 # Google Cloud Platform
@@ -20,6 +23,7 @@ gcloud_config_init:
 	@gcloud config set project ${GCP_PRJ_ID}
 	@gcloud config set artifacts/repository ${ART_REPO}
 	@gcloud config set artifacts/location ${ART_LOCATION}
+	@gcloud config set run/region ${RUN_REGION}
 
 # To use once to artifacts configuration (apis, repo)
 gcloud_artifacts_init: gcloud_config_activate
@@ -30,16 +34,13 @@ gcloud_artifacts_init: gcloud_config_activate
 		--location=${ART_LOCATION}
 
 gcloud_run_deploy: gcloud_config_activate
-	@gcloud run deploy --image ${API_IMG} --platform managed \
-		--region ${GCR_REGION} --allow-unauthenticated --memory 1Gi
+	@gcloud run deploy --image ${DOCKER_IMG} --allow-unauthenticated --memory 1Gi
 
 
 
 # ----------------------------------
 #     DOCKER
 # ----------------------------------
-
-DOCKER_IMG=${ART_LOCATION}-docker.pkg.dev/${GCP_PRJ_ID}/${ART_REPO}/${ART_IMG}
 
 docker_config:
 	@echo "CONFIGURING DOCKER..."
@@ -53,6 +54,7 @@ docker_run_local:
 
 docker_push:
 	@docker push ${DOCKER_IMG}
+
 
 
 # ----------------------------------
