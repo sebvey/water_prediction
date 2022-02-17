@@ -11,11 +11,19 @@ app = FastAPI()
 def index():
     return {'ok':'NN Prediction API running'}
 
-@app.get("/stations_prediction")
-def station_endpoint(station_id):
+@app.get("/stations")
+def stations_endpoint():
+    """Returns a json with all the stations information"""
+
+    stations = util.get_stations_df()
+    return stations.to_dict(orient='index')
+
+
+@app.get("/predictions")
+def predictions_endpoint(station_id):
     """
     Use the NN model to make a prediction of the nitrate concentration
-    for today and the next 9 days
+    at the given station. Priction for today and the next 9 days
 
     INPUT :
     - station_id - id of the station where to make the prediction (integer)
